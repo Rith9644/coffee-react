@@ -140,6 +140,193 @@
     color: #fff;
 }
 
+/* ========================
+   MODAL STYLING
+   ======================== */
+
+/* Modal Container */
+.modal.fade.show {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Modal Dialog */
+.modal-dialog {
+    animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Modal Content */
+.modal-content {
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+/* Modal Header */
+.modal-header {
+    background: linear-gradient(135deg, #82470d 0%, #6f4e37 100%);
+    color: #fff;
+    border: none;
+    padding: 1.5rem;
+}
+
+.modal-header .modal-title {
+    font-weight: 700;
+    font-size: 1.3rem;
+    letter-spacing: 0.5px;
+}
+
+.modal-header .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.modal-header .btn-close:hover:not(:disabled) {
+    opacity: 1;
+}
+
+.modal-header .btn-close-white {
+    filter: brightness(0) invert(1);
+}
+
+/* Modal Body */
+.modal-body {
+    padding: 2rem;
+    background: #fffaf5;
+}
+
+.modal-body i {
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+/* Success modal icon animation */
+.modal-body .bi-check-circle-fill {
+    animation: checkBounce 0.6s ease-out;
+}
+
+@keyframes checkBounce {
+    0% {
+        transform: scale(0) rotate(-30deg);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1) rotate(0);
+        opacity: 1;
+    }
+}
+
+/* Question mark icon animation */
+.modal-body .bi-question-circle-fill {
+    animation: questionPulse 0.5s ease-out;
+}
+
+@keyframes questionPulse {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Modal Body Text */
+.modal-body h4,
+.modal-body h5 {
+    color: #3c2a1e;
+    font-weight: 700;
+}
+
+.modal-body p {
+    color: #6c5a4f;
+    font-size: 0.95rem;
+}
+
+/* Modal Footer */
+.modal-footer {
+    background: #fff;
+    border: none;
+    padding: 1.5rem;
+    border-top: 1px solid #e6d8c3;
+}
+
+.modal-footer .btn {
+    border-radius: 999px;
+    font-weight: 600;
+    padding: 0.6rem 1.2rem;
+    transition: all 0.3s ease;
+}
+
+/* Confirmation Modal Buttons */
+.modal-footer .btn-secondary {
+    background: #e6d8c3;
+    color: #3c2a1e;
+    border: none;
+}
+
+.modal-footer .btn-secondary:hover {
+    background: #d6c8b3;
+    color: #3c2a1e;
+}
+
+.modal-footer .btn-success {
+    background: #28a745;
+    border: none;
+}
+
+.modal-footer .btn-success:hover {
+    background: #218838;
+}
+
+/* Confirmation Modal */
+.modal-body .text-center i.bi-question-circle-fill {
+    color: #82470d;
+}
+
+/* Success Modal Header */
+.modal-header.bg-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+}
+
+.modal-header.bg-success .modal-title {
+    font-size: 1.3rem;
+}
+
+/* Success Modal Icon */
+.modal-body .bi-check-circle-fill {
+    color: #28a745;
+}
+
+/* Spinner styling in confirmation modal */
+.spinner-border-sm {
+    color: #fff;
+}
+
 @media (max-width: 768px) {
     .contact-sidebar,
     .contact-form-area {
@@ -148,5 +335,31 @@
 
     .contact-sidebar h3 {
         font-size: 1.5rem;
+    }
+
+    .modal-content {
+        border-radius: 14px;
+    }
+
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding: 1.2rem;
+    }
+
+    .modal-header .modal-title {
+        font-size: 1.1rem;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .modal-body i {
+        font-size: 55px !important;
+    }
+
+    .modal-body .bi-check-circle-fill {
+        font-size: 60px !important;
     }
 }
