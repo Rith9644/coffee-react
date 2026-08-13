@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useCart } from "../context/CartContext";
 import { NavLink, Link } from "react-router-dom";
 import {
   createUserWithEmailAndPassword,
@@ -29,6 +30,7 @@ function Navbar() {
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [profileMessage, setProfileMessage] = useState("");
+  const { cartCount } = useCart();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -335,55 +337,72 @@ function Navbar() {
           </div>
         </div>
 
-        {currentUser ? (
-          <div className="profile-actions">
-            <div className="profile-chip">
+        <div className="right-side-actions">
+          {currentUser ? (
+            <div className="profile-actions">
+              <div className="profile-chip">
+                <button
+                  type="button"
+                  className="profile-avatar-btn"
+                  onClick={() => setIsProfileOpen(true)}
+                  aria-label="Open profile"
+                >
+                  <div className="profile-avatar">
+                    {(currentUser.displayName || currentUser.email || "U").charAt(0).toUpperCase()}
+                  </div>
+                </button>
+                <div className="profile-meta">
+                  <span className="profile-name">
+                    {currentUser.displayName || currentUser.email?.split("@")[0] || "User"}
+                  </span>
+                  <span className="profile-email">{currentUser.email}</span>
+                </div>
+              </div>
+              <button type="button" className="logout-button desktop-logout" onClick={handleSignOut}>
+                Sign out
+              </button>
+            </div>
+          ) : (
+            <div className="auth-buttons">
               <button
                 type="button"
-                className="profile-avatar-btn"
-                onClick={() => setIsProfileOpen(true)}
-                aria-label="Open profile"
+                className="login-button border-0"
+                onClick={() => {
+                  setIsLoginOpen(true);
+                  setIsRegisterOpen(false);
+                }}
               >
-                <div className="profile-avatar">
-                  {(currentUser.displayName || currentUser.email || "U").charAt(0).toUpperCase()}
-                </div>
+                Login
               </button>
-              <div className="profile-meta">
-                <span className="profile-name">
-                  {currentUser.displayName || currentUser.email?.split("@")[0] || "User"}
-                </span>
-                <span className="profile-email">{currentUser.email}</span>
-              </div>
-            </div>
-            <button type="button" className="logout-button desktop-logout" onClick={handleSignOut}>
-              Sign out
-            </button>
-          </div>
-        ) : (
-          <div className="auth-buttons">
-            <button
-              type="button"
-              className="login-button border-0"
-              onClick={() => {
-                setIsLoginOpen(true);
-                setIsRegisterOpen(false);
-              }}
-            >
-              Login
-            </button>
 
-            <button
-              type="button"
-              className="register-button border-0"
-              onClick={() => {
-                setIsLoginOpen(false);
-                setIsRegisterOpen(true);
-              }}
-            >
-              Register
-            </button>
-          </div>
-        )}
+              <button
+                type="button"
+                className="register-button border-0"
+                onClick={() => {
+                  setIsLoginOpen(false);
+                  setIsRegisterOpen(true);
+                }}
+              >
+                Register
+              </button>
+            </div>
+          )}
+
+          <button
+            type="button"
+            className="btn btn-outline-dark cart-button"
+          >
+            <i className="bi bi-cart3"></i>
+
+            <span className="ms-1">Cart</span>
+
+            {cartCount > 0 && (
+              <span className="badge bg-danger ms-1">
+                {cartCount}
+              </span>
+            )}
+          </button>
+        </div>
 
         {isRegisterOpen && (
           <div className="custom-modal-backdrop" onClick={() => setIsRegisterOpen(false)}>
@@ -607,6 +626,8 @@ function Navbar() {
         >
           <span className="navbar-toggler-icon"></span>
         </button>
+
+        
 
       </div>
     </nav>

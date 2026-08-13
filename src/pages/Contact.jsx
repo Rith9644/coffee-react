@@ -13,9 +13,9 @@ function Contact() {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
-    subject: "",
     message: "",
   });
+
 
   // Modal states
   const [showConfirm, setShowConfirm] = useState(false);
@@ -43,7 +43,6 @@ function Contact() {
     if (
       !formData.fullName.trim() ||
       !formData.email.trim() ||
-      !formData.subject.trim() ||
       !formData.message.trim()
     ) {
       setErrorMessage("Please fill in all fields.");
@@ -69,7 +68,6 @@ function Contact() {
       await addDoc(collection(db, "contacts"), {
         fullName: formData.fullName.trim(),
         email: formData.email.trim(),
-        subject: formData.subject.trim(),
         message: formData.message.trim(),
         createdAt: serverTimestamp(),
       });
@@ -84,7 +82,6 @@ function Contact() {
       setFormData({
         fullName: "",
         email: "",
-        subject: "",
         message: "",
       });
     } catch (error) {
@@ -104,7 +101,6 @@ function Contact() {
     setFormData({
       fullName: "",
       email: "",
-      subject: "",
       message: "",
     });
 
@@ -263,22 +259,6 @@ function Contact() {
                       className="form-control"
                       placeholder="Enter your email"
                       value={formData.email}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  {/* Subject */}
-                  <div className="col-12">
-                    <label className="form-label">
-                      Subject
-                    </label>
-
-                    <input
-                      type="text"
-                      name="subject"
-                      className="form-control"
-                      placeholder="Subject"
-                      value={formData.subject}
                       onChange={handleChange}
                     />
                   </div>

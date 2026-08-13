@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useCart } from "../context/CartContext";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 
@@ -9,6 +10,8 @@ import CheeseCroissant from "../assets/images/sp_web__0004_ham_and_cheese_croiss
 import IcedAmericano from "../assets/images/Iced_Americano.jpg";
 import ChocolateMuffin from "../assets/images/featured-image-chocolate-espresso-muffins.jpg";
 
+
+
 import "../styles/menu.css";
 
 function Menu() {
@@ -16,6 +19,7 @@ function Menu() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const { addToCart } = useCart();
 
   // Local images
   const imageMap = {
@@ -202,6 +206,15 @@ function Menu() {
 
                       {/* Description */}
                       <p>{item.description}</p>
+
+                      <button
+                        type="button"
+                        className="btn btn-primary w-100 mt-2"
+                        onClick={() => addToCart(item)}
+                      >
+                        <i className="bi bi-cart-plus me-2"></i>
+                        Add to Cart
+                      </button>
 
                     </div>
                   </div>
