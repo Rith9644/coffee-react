@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   collection,
   addDoc,
@@ -6,6 +6,9 @@ import {
 } from "firebase/firestore";
 
 import { db } from "../firebase/firebase";
+import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase/firebase";
+import { Link } from "react-router-dom";
 import "../styles/contact.css";
 
 function Contact() {
@@ -20,6 +23,12 @@ function Contact() {
   // Modal states
   const [showConfirm, setShowConfirm] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+
+  const [currentUser, setCurrentUser] = useState(null);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [loginForm, setLoginForm] = useState({ email: "", password: "" });
+  const [loginMessage, setLoginMessage] = useState("");
+  const [loginLoading, setLoginLoading] = useState(false);
 
   // Loading state
   const [loading, setLoading] = useState(false);
@@ -38,6 +47,11 @@ function Contact() {
   // Open confirmation modal
   const handleFormSubmit = (e) => {
     e.preventDefault();
+
+    if (!currentUser) {
+      setErrorMessage("Please log in to send a message.");
+      return;
+    }
 
     // Check if all fields are filled
     if (
@@ -106,6 +120,14 @@ function Contact() {
 
     setErrorMessage("");
   };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <>
@@ -282,10 +304,18 @@ function Contact() {
                   {/* Buttons */}
                   <div className="col-12 d-flex gap-2 flex-wrap">
 
+                    {!currentUser && (
+                      <div className="w-100 alert alert-info">
+                        Please <button type="button" className="btn btn-link p-0" onClick={() => setIsLoginOpen(true)}>log in</button> to send a message.
+                      </div>
+                    )}
+
                     {/* Send */}
                     <button
                       type="submit"
                       className="btn btn-primary contact-btn"
+                      disabled={!currentUser}
+                      title={!currentUser ? "Log in to send a message" : "Send message"}
                     >
                       <i className="bi bi-send me-1"></i>
                       Send Message
@@ -306,6 +336,57 @@ function Contact() {
               </div>
             </div>
           </div>
+
+          {isLoginOpen && (
+            <div className="custom-modal-backdrop" onClick={() => setIsLoginOpen(false)}>
+              <div className="custom-modal-card login-modal" onClick={(e) => e.stopPropagation()}>
+                <div className="custom-modal-header">
+                  <div>
+                    <p className="modal-eyebrow">Welcome back</p>
+                    <h5 className="modal-title">Sign in to Dictionary Café</h5>
+                  </div>
+                  <button type="button" className="btn-close" aria-label="Close" onClick={() => setIsLoginOpen(false)} />
+                </div>
+
+                <div className="custom-modal-body">
+                  <form onSubmit={async (e) => {
+                    e.preventDefault();
+                    setLoginMessage("");
+                    setLoginLoading(true);
+                    try {
+                      await signInWithEmailAndPassword(auth, loginForm.email, loginForm.password);
+                      setIsLoginOpen(false);
+                    } catch (err) {
+                      setLoginMessage(err.message || "Unable to sign in.");
+                    } finally {
+                      setLoginLoading(false);
+                    }
+                  }}>
+                    <div className="mb-3">
+                      <label className="form-label">Email address</label>
+                      <input type="email" className="form-control" value={loginForm.email} onChange={(e) => setLoginForm(prev => ({...prev, email: e.target.value}))} required />
+                    </div>
+
+                    <div className="mb-3">
+                      <label className="form-label">Password</label>
+                      <input type="password" className="form-control" value={loginForm.password} onChange={(e) => setLoginForm(prev => ({...prev, password: e.target.value}))} required />
+                    </div>
+
+                    {loginMessage && <div className="form-message">{loginMessage}</div>}
+
+                    <div className="d-flex gap-2">
+                      <button type="button" className="btn btn-outline-secondary" onClick={() => setIsLoginOpen(false)} disabled={loginLoading}>Cancel</button>
+                      <button type="submit" className="btn btn-login-submit ms-2" disabled={loginLoading}>{loginLoading ? 'Signing in...' : 'Sign in'}</button>
+                    </div>
+                  </form>
+                </div>
+
+                <div className="custom-modal-footer">
+                  <p className="mb-0 small-text">New here? <Link to="/register" onClick={() => setIsLoginOpen(false)}>Create an account</Link></p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 

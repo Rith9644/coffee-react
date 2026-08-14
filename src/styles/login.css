@@ -16,6 +16,65 @@
   box-shadow: 0 20px 45px rgba(130, 71, 13, 0.14);
 }
 
+/* Modal variant: make modal look like the login card page */
+.login-modal {
+  width: 100%;
+  max-width: 520px;
+  padding: 28px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 30px 60px rgba(25, 20, 15, 0.18);
+}
+
+.login-modal .modal-title {
+  color: #82470d;
+  font-weight: 700;
+  margin: 0 0 6px 0;
+}
+
+.login-modal .modal-eyebrow {
+  margin: 0;
+  color: #a15c2b;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.login-modal .form-label {
+  color: #5d3a24;
+  font-weight: 600;
+}
+
+.login-modal .form-control {
+  border-radius: 12px;
+  border: 1px solid #e2c7a7;
+  padding: 10px 12px;
+}
+
+.login-modal .form-control:focus {
+  border-color: #a15c2b;
+  box-shadow: 0 0 0 0.2rem rgba(161, 92, 43, 0.12);
+}
+
+.login-modal .form-message {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fff3e6;
+  color: #8f4c16;
+  font-size: 0.95rem;
+}
+
+.login-modal .btn-login-submit {
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #82470d 0%, #a15c2b 100%);
+  color: white;
+  padding: 10px 16px;
+  font-weight: 600;
+}
+
 .login-card h2 {
   color: #82470d;
   font-weight: 700;

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useCart } from "../context/CartContext";
+import { useNavigate } from "react-router-dom";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 
@@ -210,7 +211,12 @@ function Menu() {
                       <button
                         type="button"
                         className="btn btn-primary w-100 mt-2"
-                        onClick={() => addToCart(item)}
+                        onClick={() =>
+                          addToCart({
+                            ...item,
+                            image: imageMap[item.image] || item.image,
+                          })
+                        }
                       >
                         <i className="bi bi-cart-plus me-2"></i>
                         Add to Cart

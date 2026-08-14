@@ -1,0 +1,143 @@
+.checkout-overlay,
+.checkout-success-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 3000;
+}
+
+.checkout-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  width: 92%;
+  max-width: 600px;
+  max-height: 90vh;
+
+  background: white;
+  border-radius: 16px;
+
+  z-index: 3001;
+
+  overflow: hidden;
+}
+
+.checkout-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 18px 22px;
+  border-bottom: 1px solid #eee;
+}
+
+.checkout-header h4 {
+  margin: 0;
+  font-weight: 700;
+}
+
+.checkout-close {
+  border: none;
+  background: transparent;
+  font-size: 30px;
+  cursor: pointer;
+}
+
+.checkout-body {
+  padding: 22px;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+.checkout-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.checkout-item div {
+  display: flex;
+  flex-direction: column;
+}
+
+.checkout-item small {
+  color: #777;
+  margin-top: 3px;
+}
+
+.checkout-total {
+  display: flex;
+  justify-content: space-between;
+
+  padding: 18px 0;
+
+  font-size: 20px;
+}
+
+.checkout-submit {
+  padding: 12px;
+  font-weight: 600;
+}
+
+.checkout-success-overlay {
+  z-index: 4000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkout-success {
+  width: 90%;
+  max-width: 420px;
+
+  background: white;
+  border-radius: 18px;
+
+  padding: 35px 25px;
+
+  text-align: center;
+}
+
+.success-icon {
+  width: 70px;
+  height: 70px;
+
+  margin: 0 auto 20px;
+
+  border-radius: 50%;
+
+  background: #198754;
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 35px;
+}
+
+.checkout-success h3 {
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.checkout-success .btn {
+  min-width: 120px;
+  margin-top: 15px;
+}
+
+@media (max-width: 576px) {
+  .checkout-modal {
+    width: 95%;
+  }
+
+  .checkout-body {
+    padding: 18px;
+  }
+}

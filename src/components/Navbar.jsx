@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useCart } from "../context/CartContext";
 import { NavLink, Link } from "react-router-dom";
+import CartModal from "./CartModal";
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
@@ -11,6 +12,9 @@ import {
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import Logo from "../assets/images/Logo.png";
 import { auth } from "../firebase/firebase";
+import { doc,getDoc, setDoc } from "firebase/firestore";
+import { db } from "../firebase/firebase";
+
 import "../styles/Navbar.css";
 import "../styles/login.css";
 
@@ -24,13 +28,16 @@ function Navbar() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [userRole, setUserRole] = useState("");
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [editName, setEditName] = useState("");
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [profileMessage, setProfileMessage] = useState("");
+  const [isSignOutConfirmOpen, setIsSignOutConfirmOpen] = useState(false);
   const { cartCount } = useCart();
+  const [showCart, setShowCart] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -79,71 +86,109 @@ function Navbar() {
       setMessage(errorMessage);
     }
   };
-
   const handleRegisterSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!registerFormData.name.trim() || !registerFormData.email.trim() || !registerFormData.password.trim()) {
-      setRegisterMessage("Please fill in your name, email, and password.");
-      return;
+  if (
+    !registerFormData.name.trim() ||
+    !registerFormData.email.trim() ||
+    !registerFormData.password.trim()
+  ) {
+    setRegisterMessage(
+      "Please fill in your name, email, and password."
+    );
+    return;
+  }
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      registerFormData.email,
+      registerFormData.password
+    );
+
+    // Update display name
+    await updateProfile(userCredential.user, {
+      displayName: registerFormData.name.trim(),
+    });
+
+    // Save user to Firestore
+    await setDoc(doc(db, "users", userCredential.user.uid), {
+      uid: userCredential.user.uid,
+      name: registerFormData.name.trim(),
+      email: registerFormData.email,
+      role: "user",
+    });
+
+    // Update current user
+    setCurrentUser({
+      ...userCredential.user,
+      displayName: registerFormData.name.trim(),
+    });
+
+    setRegisterMessage("Account created successfully!");
+
+    setRegisterFormData({
+      name: "",
+      email: "",
+      password: "",
+    });
+
+    setIsRegisterOpen(false);
+  } catch (error) {
+    let errorMessage = "Registration failed.";
+
+    if (error.code === "auth/email-already-in-use") {
+      errorMessage = "This email is already registered.";
+    } else if (error.code === "auth/invalid-email") {
+      errorMessage = "Please enter a valid email address.";
+    } else if (error.code === "auth/weak-password") {
+      errorMessage = "Password should be at least 6 characters.";
     }
 
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        registerFormData.email,
-        registerFormData.password
-      );
+    setRegisterMessage(errorMessage);
+  }
+};
 
-      await updateProfile(userCredential.user, {
-        displayName: registerFormData.name.trim(),
-      });
-
-      setCurrentUser({ ...userCredential.user, displayName: registerFormData.name.trim() });
-      setRegisterMessage("Account created successfully!");
-      setRegisterFormData({ name: "", email: "", password: "" });
-      setIsRegisterOpen(false);
-    } catch (error) {
-      let errorMessage = "Registration failed.";
-
-      if (error.code === "auth/email-already-in-use") {
-        errorMessage = "This email is already registered.";
-      } else if (error.code === "auth/invalid-email") {
-        errorMessage = "Please enter a valid email address.";
-      } else if (error.code === "auth/weak-password") {
-        errorMessage = "Password should be at least 6 characters.";
-      }
-
-      setRegisterMessage(errorMessage);
-    }
+  const handleSignOut = () => {
+    setIsSignOutConfirmOpen(true);
   };
 
-  const handleSignOut = async () => {
+  const doSignOut = async () => {
     try {
       await signOut(auth);
       setCurrentUser(null);
       setMessage("You have been signed out.");
     } catch (error) {
       setMessage("Unable to sign out right now.");
+    } finally {
+      setIsSignOutConfirmOpen(false);
     }
   };
 
   useEffect(() => {
-    document.body.style.overflow = isLoginOpen || isRegisterOpen || isProfileOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isLoginOpen, isRegisterOpen, isProfileOpen]);
+  const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    setCurrentUser(user);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-    });
+    if (user) {
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
 
-    return () => unsubscribe();
-  }, []);
+      if (docSnap.exists()) {
+        setUserRole(docSnap.data().role);
+      } else {
+        setUserRole("");
+      }
+    } else {
+      setUserRole("");
+    }
+  });
+
+  return () => unsubscribe();
+}, []);
 
   return (
+    <>
     <nav className="navbar navbar-expand-lg fixed-top custom-navbar">
       <div className="container-fluid">
 
@@ -348,7 +393,11 @@ function Navbar() {
                   aria-label="Open profile"
                 >
                   <div className="profile-avatar">
-                    {(currentUser.displayName || currentUser.email || "U").charAt(0).toUpperCase()}
+                    {currentUser.photoURL ? (
+                      <img src={currentUser.photoURL} alt="profile" />
+                    ) : (
+                      (currentUser.displayName || currentUser.email || "U").charAt(0).toUpperCase()
+                    )}
                   </div>
                 </button>
                 <div className="profile-meta">
@@ -388,20 +437,23 @@ function Navbar() {
             </div>
           )}
 
-          <button
-            type="button"
-            className="btn btn-outline-dark cart-button"
-          >
-            <i className="bi bi-cart3"></i>
+          {currentUser && (
+            <button
+              type="button"
+              className="cart-button"
+              onClick={() => setShowCart(true)}
+            >
+              <i className="bi bi-cart3"></i>
 
-            <span className="ms-1">Cart</span>
+              <span className="cart-button-text">Cart</span>
 
-            {cartCount > 0 && (
-              <span className="badge bg-danger ms-1">
-                {cartCount}
-              </span>
-            )}
-          </button>
+              {cartCount > 0 && (
+                <span className="badge bg-danger ms-1">
+                  {cartCount}
+                </span>
+              )}
+            </button>
+          )}
         </div>
 
         {isRegisterOpen && (
@@ -513,7 +565,13 @@ function Navbar() {
                   <>
                     <div className="d-flex align-items-center gap-3 mb-3">
                       <div className="profile-avatar" style={{width:60,height:60,fontSize:24}}>
-                        {(currentUser.displayName || currentUser.email || "U").charAt(0).toUpperCase()}
+                        {photoPreview ? (
+                          <img src={photoPreview} alt="preview" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:'50%'}} />
+                        ) : currentUser.photoURL ? (
+                          <img src={currentUser.photoURL} alt="profile" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:'50%'}} />
+                        ) : (
+                          (currentUser.displayName || currentUser.email || "U").charAt(0).toUpperCase()
+                        )}
                       </div>
                       <div>
                         <div className="profile-name">{currentUser.displayName || currentUser.email?.split("@")[0]}</div>
@@ -526,7 +584,7 @@ function Navbar() {
                       <button type="button" className="btn btn-login-submit" onClick={() => { setIsEditingProfile(true); setEditName(currentUser.displayName || currentUser.email?.split("@")[0] || ""); }}>
                         Edit profile
                       </button>
-                      <button type="button" className="logout-button" onClick={() => { setIsProfileOpen(false); handleSignOut(); }}>
+                      <button type="button" className="logout-button" onClick={() => { setIsProfileOpen(false); setIsSignOutConfirmOpen(true); }}>
                         Sign out
                       </button>
                     </div>
@@ -539,6 +597,8 @@ function Navbar() {
                         <div className="profile-avatar" style={{width:64,height:64,fontSize:22,flex:'0 0 64px'}}>
                           {photoPreview ? (
                             <img src={photoPreview} alt="preview" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:'50%'}} />
+                          ) : currentUser.photoURL ? (
+                            <img src={currentUser.photoURL} alt="profile" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:'50%'}} />
                           ) : (
                             (currentUser.displayName || currentUser.email || "U").charAt(0).toUpperCase()
                           )}
@@ -607,12 +667,22 @@ function Navbar() {
               </div>
 
               <div className="custom-modal-footer">
-                <button type="button" className="logout-button" onClick={() => { setIsProfileOpen(false); handleSignOut(); }}>
+                <button type="button" className="logout-button" onClick={() => { setIsProfileOpen(false); setIsSignOutConfirmOpen(true); }}>
                   Sign out
                 </button>
               </div>
             </div>
           </div>
+        )}
+
+          {userRole === "admin" && (
+          <Link
+            to="/admin"
+            className="admin-button"
+          >
+            <i className="fa-solid fa-user-shield"></i>
+            <span className="admin-button-text">Admin</span>
+          </Link>
         )}
 
         {/* Hamburger */}
@@ -627,10 +697,39 @@ function Navbar() {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        
 
+
+            
+        
       </div>
     </nav>
+    <CartModal
+        show={showCart}
+        onClose={() => setShowCart(false)}
+      />
+    {isSignOutConfirmOpen && (
+      <div className="custom-modal-backdrop" onClick={() => setIsSignOutConfirmOpen(false)}>
+        <div className="custom-modal-card confirm-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="custom-modal-header">
+            <div>
+              <p className="modal-eyebrow">Confirm</p>
+              <h5 className="modal-title">Sign out</h5>
+            </div>
+            <button type="button" className="btn-close" aria-label="Close" onClick={() => setIsSignOutConfirmOpen(false)} />
+          </div>
+
+          <div className="custom-modal-body">
+            <p className="small-text">Are you sure you want to sign out? You will be returned to the home page and your cart will be cleared for this session.</p>
+          </div>
+
+          <div className="custom-modal-footer confirm-actions">
+            <button type="button" className="logout-button" onClick={() => setIsSignOutConfirmOpen(false)}>Cancel</button>
+            <button type="button" className="btn btn-login-submit ms-2" onClick={doSignOut}>Sign out</button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }
 
