@@ -1,77 +1,259 @@
-.admin-layout{
-    display:flex;
-    min-height:100vh;
-    margin-top:80px;
+/* ========================================
+   ADMIN LAYOUT
+======================================== */
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  margin-top: 80px;
 }
 
-.admin-sidebar{
-    width:250px;
-    background:#212529;
-    color:white;
-    padding:30px 20px;
+.admin-main {
+  flex: 1;
+  min-width: 0;
+  background: #f4f6f9;
+  padding: 40px;
 }
 
-.admin-sidebar .logo{
-    font-size:24px;
-    margin-bottom:40px;
+
+/* ========================================
+   SIDEBAR
+======================================== */
+
+.admin-sidebar {
+  width: 250px;
+  flex-shrink: 0;
+  min-height: calc(100vh - 80px);
+
+  background: #212529;
+  color: white;
+
+  padding: 30px 20px;
+
+  position: relative;
+  z-index: 1000;
 }
 
-.admin-sidebar a{
-    display:block;
-    color:white;
-    text-decoration:none;
-    padding:12px 15px;
-    border-radius:8px;
-    margin-bottom:10px;
-    transition:.3s;
+.admin-sidebar-header {
+  display: block;
 }
 
-.admin-sidebar a:hover{
-    background:#0d6efd;
+.logo {
+  color: white;
+  font-size: 24px;
+  margin: 0 0 40px 0;
 }
 
-.admin-main{
-    flex:1;
-    background:#f4f6f9;
-    padding:40px;
+.admin-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.dashboard-subtitle{
-    color:gray;
-    margin-bottom:30px;
+.admin-link {
+  display: block;
+
+  color: white;
+  text-decoration: none;
+
+  padding: 12px 15px;
+
+  border-radius: 8px;
+
+  transition: 0.3s;
 }
 
-.dashboard-cards{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:20px;
+.admin-link:hover {
+  background: #6f4e37;
+  color: white;
 }
 
-.dashboard-card{
-    background:white;
-    padding:25px;
-    border-radius:15px;
-    box-shadow:0 5px 15px rgba(0,0,0,.08);
+.admin-link.active {
+  background: #6f4e37;
+  color: white;
+  font-weight: bold;
 }
 
-.dashboard-card h1{
-    font-size:42px;
-    margin:15px 0;
+
+/* ========================================
+   HAMBURGER
+======================================== */
+
+.admin-hamburger {
+  display: none;
+
+  position: fixed;
+
+  top: 90px;
+  left: 15px;
+
+  width: 45px;
+  height: 45px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: #212529;
+  color: white;
+
+  font-size: 24px;
+
+  cursor: pointer;
+
+  z-index: 1100;
 }
 
-.dashboard-card p{
-    color:gray;
+
+/* Close button */
+
+.admin-close {
+  display: none;
+
+  border: none;
+  background: transparent;
+
+  color: white;
+
+  font-size: 32px;
+
+  cursor: pointer;
 }
 
-/* Order Status Dropdown */
+
+/* Overlay */
+
+.admin-overlay {
+  display: none;
+}
+
+
+/* ========================================
+   DASHBOARD
+======================================== */
+
+.dashboard-subtitle {
+  color: gray;
+  margin-bottom: 30px;
+}
+
+.dashboard-cards {
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(220px, 1fr));
+
+  gap: 20px;
+}
+
+.dashboard-card {
+  background: white;
+
+  padding: 30px;
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.08);
+
+  transition: 0.3s;
+
+  cursor: pointer;
+
+  position: relative;
+
+  overflow: hidden;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-8px);
+
+  box-shadow:
+    0 15px 35px rgba(0, 0, 0, 0.12);
+}
+
+.card-icon {
+  width: 65px;
+  height: 65px;
+
+  border-radius: 50%;
+
+  background: #6f4e37;
+
+  color: white;
+
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  font-size: 28px;
+
+  margin-bottom: 20px;
+}
+
+.dashboard-card h3 {
+  color: #6f4e37;
+
+  font-size: 22px;
+
+  font-weight: 600;
+
+  margin-bottom: 10px;
+}
+
+.dashboard-card h1 {
+  font-size: 48px;
+
+  font-weight: 700;
+
+  margin: 0;
+}
+
+.dashboard-card p {
+  color: #888;
+
+  margin-top: 10px;
+}
+
+
+/* Dashboard icon colors */
+
+.orders-icon {
+  background: #4e73df;
+}
+
+.revenue-icon {
+  background: #1cc88a;
+}
+
+.users-icon {
+  background: #36b9cc;
+}
+
+.menu-icon {
+  background: #f6c23e;
+}
+
+
+/* ========================================
+   ORDER STATUS
+======================================== */
+
 .status-select {
   width: 170px;
+
   padding: 8px 10px;
+
   border: 1px solid #ccc;
+
   border-radius: 8px;
-  background: #fff;
+
+  background: white;
+
   cursor: pointer;
+
   font-weight: 500;
+
   transition: 0.2s;
 }
 
@@ -81,20 +263,30 @@
 
 .status-select:focus {
   outline: none;
+
   border-color: #8b5e3c;
-  box-shadow: 0 0 5px rgba(139, 94, 60, 0.3);
+
+  box-shadow:
+    0 0 5px rgba(139, 94, 60, 0.3);
 }
+
+
+/* ========================================
+   MODAL
+======================================== */
 
 .admin-modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
+
+  inset: 0;
+
   width: 100%;
   height: 100%;
 
-  background: rgba(0,0,0,.45);
+  background: rgba(0, 0, 0, 0.45);
 
   display: flex;
+
   justify-content: center;
   align-items: center;
 
@@ -103,22 +295,26 @@
 
 .admin-modal {
   width: 700px;
+
   max-width: 95%;
 
-  background: #fff;
+  background: white;
 
   border-radius: 15px;
 
   padding: 30px;
 
-  box-shadow: 0 10px 40px rgba(0,0,0,.2);
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.2);
 
   max-height: 90vh;
+
   overflow-y: auto;
 }
 
 .confirm-modal {
   max-width: 420px;
+
   text-align: center;
 }
 
@@ -128,67 +324,528 @@
 
 .confirm-modal p {
   margin-top: 15px;
+
   font-size: 16px;
 }
 
-.dashboard-card{
-    background:#fff;
-    border-radius:18px;
-    padding:30px;
-    box-shadow:0 8px 25px rgba(0,0,0,.08);
-    transition:.3s;
-    cursor:pointer;
-    position:relative;
-    overflow:hidden;
+
+/* ========================================
+   TABLE
+======================================== */
+
+.table td {
+  vertical-align: middle;
+
+  padding: 20px;
 }
 
-.dashboard-card:hover{
-    transform:translateY(-8px);
-    box-shadow:0 15px 35px rgba(0,0,0,.12);
+
+/* ========================================
+   TABLE RESPONSIVE
+======================================== */
+
+.table-responsive {
+  width: 100%;
+
+  overflow-x: auto;
+
+  -webkit-overflow-scrolling: touch;
 }
 
-.card-icon{
-    width:65px;
-    height:65px;
-    border-radius:50%;
-    background:#6f4e37;
-    color:white;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-size:28px;
-    margin-bottom:20px;
+
+/* ========================================
+   TABLET
+======================================== */
+
+@media (max-width: 991px) {
+
+  .admin-layout {
+    margin-top: 70px;
+  }
+
+  /* Sidebar becomes mobile drawer */
+
+  .admin-sidebar {
+    position: fixed;
+
+    top: 0;
+    left: -280px;
+
+    width: 270px;
+
+    height: 100vh;
+
+    min-height: 100vh;
+
+    padding: 25px 20px;
+
+    transition: left 0.3s ease;
+
+    z-index: 2000;
+
+    box-shadow:
+      5px 0 20px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Open sidebar */
+
+  .admin-sidebar.show {
+    left: 0;
+  }
+
+  .admin-sidebar-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+  }
+
+  .logo {
+    font-size: 20px;
+
+    margin: 0;
+  }
+
+  .admin-close {
+    display: block;
+  }
+
+  .admin-links {
+    margin-top: 35px;
+  }
+
+  .admin-link {
+    padding: 14px 15px;
+
+    font-size: 16px;
+  }
+
+  /* Hamburger */
+
+  .admin-hamburger {
+    display: block;
+  }
+
+  /* Overlay */
+
+  .admin-overlay {
+    display: block;
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.45);
+
+    z-index: 1500;
+  }
+
+  /* Main */
+
+  .admin-main {
+    width: 100%;
+
+    padding: 30px;
+  }
+
+  .dashboard-cards {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
 }
 
-.dashboard-card h3{
-    color:#6f4e37;
-    font-size:22px;
-    font-weight:600;
-    margin-bottom:10px;
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 600px) {
+
+  .admin-layout {
+    margin-top: 65px;
+  }
+
+  .admin-main {
+    padding: 20px 15px;
+  }
+
+  .admin-hamburger {
+    top: 100px;
+
+    left: 12px;
+
+    width: 42px;
+    height: 42px;
+
+    font-size: 22px;
+  }
+
+  .dashboard-cards {
+    grid-template-columns: 1fr;
+
+    gap: 15px;
+  }
+
+  .dashboard-card {
+    padding: 20px;
+
+    border-radius: 14px;
+
+    cursor: default;
+  }
+
+  .dashboard-card:hover {
+    transform: none;
+  }
+
+  .dashboard-card h1 {
+    font-size: 32px;
+  }
+
+  .dashboard-card h3 {
+    font-size: 18px;
+  }
+
+  .card-icon {
+    width: 50px;
+    height: 50px;
+
+    font-size: 22px;
+
+    margin-bottom: 15px;
+  }
+
+  .dashboard-subtitle {
+    font-size: 14px;
+
+    margin-bottom: 20px;
+  }
+
+  /* Status dropdown */
+
+  .status-select {
+    width: 140px;
+
+    font-size: 14px;
+  }
+
+  /* Tables */
+
+  .table {
+    min-width: 700px;
+  }
+
+  .table td {
+    padding: 12px;
+  }
+
+  /* Modal */
+
+  .admin-modal {
+    width: calc(100% - 30px);
+
+    max-width: none;
+
+    padding: 20px;
+
+    border-radius: 12px;
+  }
 }
 
-.dashboard-card h1{
-    font-size:48px;
-    font-weight:700;
-    margin:0;
+
+/* ========================================
+   VERY SMALL PHONES
+======================================== */
+
+@media (max-width: 400px) {
+
+  .admin-main {
+    padding: 15px 10px;
+  }
+
+  .admin-sidebar {
+    width: 250px;
+
+    left: -260px;
+  }
+
+  .dashboard-card {
+    padding: 16px;
+  }
+
+  .dashboard-card h1 {
+    font-size: 28px;
+  }
+
+  .dashboard-card h3 {
+    font-size: 16px;
+  }
 }
 
-.dashboard-card p{
-    color:#888;
-    margin-top:10px;
-}
-.orders-icon{
-    background:#4e73df;
+
+/* Menu Manager */
+.menu-admin-image {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-.revenue-icon{
-    background:#1cc88a;
+
+/* Tablet */
+@media (max-width: 991px) {
+  .menu-admin-image {
+    width: 150px;
+    height: 150px;
+  }
 }
 
-.users-icon{
-    background:#36b9cc;
+
+/* Mobile */
+@media (max-width: 600px) {
+
+  .hide-mobile {
+    display: none !important;
+  }
+
+  .menu-admin-image {
+    width: 110px;
+    height: 110px;
+  }
+
+  .table td,
+  .table th {
+    padding: 10px 8px;
+  }
+
+  .table td:nth-child(2) {
+    font-size: 16px;
+    font-weight: 500;
+  }
 }
 
-.menu-icon{
-    background:#f6c23e;
+
+.menu-admin-image {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
+}
+
+.menu-admin-preview {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 15px;
+}
+
+@media (max-width: 576px) {
+  .menu-admin-image {
+    width: 65px;
+    height: 65px;
+  }
+
+  .menu-admin-preview {
+    width: 140px;
+    height: 140px;
+  }
+
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+/* =========================
+   Success Modal
+========================= */
+
+.success-icon {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #198754;
+  color: white;
+
+  font-size: 36px;
+  font-weight: bold;
+}
+
+.confirm-modal {
+  width: 400px;
+  max-width: 90%;
+
+  padding: 35px 30px;
+
+  text-align: center;
+
+  border-radius: 18px;
+}
+
+.confirm-modal h4 {
+  margin-bottom: 12px;
+
+  color: #6f4e37;
+
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.confirm-modal p {
+  margin-bottom: 25px;
+
+  color: #666;
+
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.confirm-modal .btn {
+  min-width: 120px;
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 10px 20px;
+}
+
+/* =========================
+   IMAGE PICKER
+========================= */
+
+.image-picker {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-top: 12px;
+}
+
+.image-option {
+  position: relative;
+  background: #fff;
+  border: 2px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 8px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  overflow: hidden;
+}
+
+.image-option:hover {
+  border-color: #6f4e37;
+  transform: translateY(-2px);
+}
+
+.image-option.selected {
+  border-color: #6f4e37;
+  box-shadow: 0 0 0 2px rgba(111, 78, 55, 0.15);
+}
+
+.image-option img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+}
+
+.image-option-name {
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  margin-top: 8px;
+  color: #444;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.image-selected {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+
+  width: 28px;
+  height: 28px;
+
+  border-radius: 50%;
+
+  background: #6f4e37;
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: bold;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+
+  .image-picker {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .image-option img {
+    height: 100px;
+  }
+
+  .image-option-name {
+    font-size: 12px;
+  }
+
+}
+
+
+/* Very small phones */
+
+@media (max-width: 380px) {
+
+  .image-picker {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .image-option img {
+    height: 85px;
+  }
+
+}
+
+
+.menu-action-buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.menu-action-buttons .btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 22px;
+}
+
+table th:last-child,
+table td:last-child {
+  min-width: 130px;
+  width: 130px;
 }

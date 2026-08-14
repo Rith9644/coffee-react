@@ -26,14 +26,15 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-         <Route
+        
+        <Route
           path="/admin/*"
           element={
             <AdminRoute>
               <Admin />
             </AdminRoute>
           }
-/>
+        />
       </Routes>
 
       <Footer />

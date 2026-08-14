@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 
 import AdminSidebar from "../../components/AdminSidebar";
@@ -10,34 +11,28 @@ import MenuManager from "./MenuManager";
 import "../../styles/admin.css";
 
 function Admin() {
+  const [showSidebar, setShowSidebar] = useState(false);
+
   return (
     <div className="admin-layout">
 
-      <AdminSidebar />
+
+      <AdminSidebar
+        showSidebar={showSidebar}
+        setShowSidebar={setShowSidebar}
+      />
 
       <div className="admin-main">
 
         <Routes>
 
-          <Route
-            index
-            element={<Dashboard />}
-          />
+          <Route index element={<Dashboard />} />
 
-          <Route
-            path="orders"
-            element={<Orders />}
-          />
+          <Route path="orders" element={<Orders />} />
 
-          <Route
-            path="users"
-            element={<Users />}
-          />
+          <Route path="menu" element={<MenuManager />} />
 
-          <Route
-            path="menu"
-            element={<MenuManager />}
-          />
+          <Route path="users" element={<Users />} />
 
         </Routes>
 
