@@ -10,7 +10,7 @@ function AdminSidebar() {
 
   return (
     <>
-      {/* Hamburger - only visible on mobile/tablet */}
+      {/* Hamburger - mobile/tablet */}
       <button
         type="button"
         className="admin-hamburger"
@@ -32,10 +32,14 @@ function AdminSidebar() {
 
       {/* Sidebar */}
       <aside className={`admin-sidebar ${isOpen ? "show" : ""}`}>
-        <div className="admin-sidebar-header">
-          <h2 className="logo">☕ Dictionary Café</h2>
 
-          {/* Close button - mobile only */}
+        {/* Sidebar Header */}
+        <div className="admin-sidebar-header">
+          <h2 className="logo">
+            ☕ Dictionary Café
+          </h2>
+
+          {/* Close button - mobile */}
           <button
             type="button"
             className="admin-close"
@@ -46,47 +50,71 @@ function AdminSidebar() {
           </button>
         </div>
 
+        {/* Navigation */}
         <nav className="admin-links">
+
+          {/* Dashboard */}
           <NavLink
             to="/admin"
             end
             onClick={closeSidebar}
             className={({ isActive }) =>
-              isActive ? "admin-link active" : "admin-link"
+              isActive
+                ? "admin-link active"
+                : "admin-link"
             }
           >
             🏠 Dashboard
           </NavLink>
 
+          {/* Orders */}
           <NavLink
             to="/admin/orders"
             onClick={closeSidebar}
             className={({ isActive }) =>
-              isActive ? "admin-link active" : "admin-link"
+              isActive
+                ? "admin-link active"
+                : "admin-link"
             }
           >
             📦 Orders
           </NavLink>
 
+          {/* Menu */}
           <NavLink
             to="/admin/menu"
             onClick={closeSidebar}
             className={({ isActive }) =>
-              isActive ? "admin-link active" : "admin-link"
+              isActive
+                ? "admin-link active"
+                : "admin-link"
             }
           >
             ☕ Menu
           </NavLink>
 
+          {/* Users */}
           <NavLink
             to="/admin/users"
             onClick={closeSidebar}
             className={({ isActive }) =>
-              isActive ? "admin-link active" : "admin-link"
+              isActive
+                ? "admin-link active"
+                : "admin-link"
             }
           >
             👥 Users
           </NavLink>
+
+          {/* Visit Website */}
+          <NavLink
+            to="/"
+            onClick={closeSidebar}
+            className="admin-link admin-website-link"
+          >
+            🌐 Visit Website
+          </NavLink>
+
         </nav>
       </aside>
     </>
