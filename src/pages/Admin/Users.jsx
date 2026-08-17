@@ -3,6 +3,7 @@ import {
   collection,
   getDocs,
   deleteDoc,
+  updateDoc,
   doc,
 } from "firebase/firestore";
 
@@ -10,9 +11,17 @@ import { db } from "../../firebase/firebase";
 import "../../styles/admin.css";
 
 function Users() {
+
+
+  const [showRoleModal, setShowRoleModal] = useState(false);
+  const [roleChangeUser, setRoleChangeUser] = useState(null);
+  const [newRole, setNewRole] = useState("");
+  const [changingRole, setChangingRole] = useState(false);
+
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Delete modal
   const [deleteId, setDeleteId] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -36,23 +45,40 @@ function Users() {
 
         return {
           id: userDoc.id,
+
           name:
             data.name ||
             data.displayName ||
             "Unnamed User",
-          email: data.email || "No email",
-          role: data.role || "user",
-          status: data.status || "active",
-          createdAt: data.createdAt || null,
+
+          email:
+            data.email ||
+            "No email",
+
+          role:
+            data.role ||
+            "user",
+
+          status:
+            data.status ||
+            "active",
+
+          createdAt:
+            data.createdAt ||
+            null,
         };
       });
 
       setUsers(userList);
     } catch (error) {
-      console.error("Error loading users:", error);
+      console.error(
+        "Error loading users:",
+        error
+      );
 
       setError(
-        error.message || "Could not load users."
+        error.message ||
+          "Could not load users."
       );
     } finally {
       setLoading(false);
@@ -81,25 +107,31 @@ function Users() {
     if (!deleteId) return;
 
     try {
+      setError("");
+
+      // Delete user document from Firestore
       await deleteDoc(
         doc(db, "users", deleteId)
       );
 
-      // Remove immediately from screen
+      // Remove user immediately from screen
       setUsers((prevUsers) =>
         prevUsers.filter(
-          (user) => user.id !== deleteId
+          (user) =>
+            user.id !== deleteId
         )
       );
 
+      // Close modal
       closeDeleteModal();
+
     } catch (error) {
       console.error(
         "Error deleting user:",
         error
       );
 
-      alert(
+      setError(
         error.message ||
           "Could not delete user."
       );
@@ -107,44 +139,118 @@ function Users() {
   };
 
   // ==========================================
+  // CHANGE USER ROLE
+  // ==========================================
+
+  const openRoleModal = (user, role) => {
+  // If they selected the same role, do nothing
+  if (user.role === role) {
+    return;
+  }
+
+  setRoleChangeUser(user);
+  setNewRole(role);
+  setShowRoleModal(true);
+};
+
+const closeRoleModal = () => {
+  if (changingRole) return;
+
+  setShowRoleModal(false);
+  setRoleChangeUser(null);
+  setNewRole("");
+};
+
+const confirmRoleChange = async () => {
+  if (!roleChangeUser || !newRole) return;
+
+  try {
+    setChangingRole(true);
+
+    await updateDoc(
+      doc(db, "users", roleChangeUser.id),
+      {
+        role: newRole,
+      }
+    );
+
+    // Update UI immediately
+    setUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user.id === roleChangeUser.id
+          ? {
+              ...user,
+              role: newRole,
+            }
+          : user
+      )
+    );
+
+    closeRoleModal();
+
+  } catch (error) {
+    console.error(
+      "Error updating user role:",
+      error
+    );
+
+    alert(
+      error.message ||
+        "Could not update user role."
+    );
+  } finally {
+    setChangingRole(false);
+  }
+};
+  // ==========================================
   // STATISTICS
   // ==========================================
 
-  const totalUsers = users.length;
+  const totalUsers =
+    users.length;
 
-  const activeUsers = users.filter(
-    (user) =>
-      user.status?.toLowerCase() === "active"
-  ).length;
+  const activeUsers =
+    users.filter(
+      (user) =>
+        user.status?.toLowerCase() ===
+        "active"
+    ).length;
 
   // Users created in the last 7 days
-  const newUsers = users.filter((user) => {
-    if (!user.createdAt) return false;
-
-    try {
-      let date;
-
-      if (
-        typeof user.createdAt.toDate ===
-        "function"
-      ) {
-        date = user.createdAt.toDate();
-      } else {
-        date = new Date(user.createdAt);
+  const newUsers =
+    users.filter((user) => {
+      if (!user.createdAt) {
+        return false;
       }
 
-      const sevenDaysAgo =
-        new Date();
+      try {
+        let date;
 
-      sevenDaysAgo.setDate(
-        sevenDaysAgo.getDate() - 7
-      );
+        if (
+          typeof user.createdAt.toDate ===
+          "function"
+        ) {
+          date =
+            user.createdAt.toDate();
+        } else {
+          date =
+            new Date(user.createdAt);
+        }
 
-      return date >= sevenDaysAgo;
-    } catch {
-      return false;
-    }
-  }).length;
+        const sevenDaysAgo =
+          new Date();
+
+        sevenDaysAgo.setDate(
+          sevenDaysAgo.getDate() - 7
+        );
+
+        return (
+          date >= sevenDaysAgo
+        );
+      } catch {
+        return false;
+      }
+    }).length;
 
   // ==========================================
   // PAGE
@@ -153,9 +259,9 @@ function Users() {
   return (
     <div className="admin-users-page">
 
-      {/* ================================
+      {/* =====================================
           PAGE HEADER
-      ================================= */}
+      ====================================== */}
 
       <div className="users-page-header">
 
@@ -181,9 +287,9 @@ function Users() {
 
       </div>
 
-      {/* ================================
+      {/* =====================================
           ERROR
-      ================================= */}
+      ====================================== */}
 
       {error && (
         <div className="users-error">
@@ -191,11 +297,13 @@ function Users() {
         </div>
       )}
 
-      {/* ================================
+      {/* =====================================
           STATISTICS
-      ================================= */}
+      ====================================== */}
 
       <div className="users-stats">
+
+        {/* TOTAL USERS */}
 
         <div className="user-stat-card">
 
@@ -205,10 +313,16 @@ function Users() {
 
           <div>
             <p>Total Users</p>
-            <strong>{totalUsers}</strong>
+
+            <strong>
+              {totalUsers}
+            </strong>
           </div>
 
         </div>
+
+
+        {/* ACTIVE USERS */}
 
         <div className="user-stat-card">
 
@@ -218,10 +332,16 @@ function Users() {
 
           <div>
             <p>Active Users</p>
-            <strong>{activeUsers}</strong>
+
+            <strong>
+              {activeUsers}
+            </strong>
           </div>
 
         </div>
+
+
+        {/* NEW USERS */}
 
         <div className="user-stat-card">
 
@@ -231,23 +351,31 @@ function Users() {
 
           <div>
             <p>New Users</p>
-            <strong>{newUsers}</strong>
+
+            <strong>
+              {newUsers}
+            </strong>
           </div>
 
         </div>
 
       </div>
 
-      {/* ================================
-          USERS TABLE
-      ================================= */}
 
-      <div className="users-card">
+      {/* =====================================
+          USERS TABLE CARD
+      ====================================== */}
 
-        <div className="users-card-header">
+      <div className="users-table-card">
+
+        {/* TABLE HEADER */}
+
+        <div className="users-table-header">
 
           <div>
-            <h2>Registered Users</h2>
+            <h3>
+              Registered Users
+            </h3>
 
             <p>
               View and manage your café users
@@ -255,142 +383,289 @@ function Users() {
           </div>
 
           <span className="users-count">
-            {totalUsers}{" "}
-            {totalUsers === 1
+            {users.length}{" "}
+            {users.length === 1
               ? "User"
               : "Users"}
           </span>
 
         </div>
 
+
+        {/* ===================================
+            LOADING
+        ==================================== */}
+
         {loading ? (
+
           <div className="users-loading">
-            <div className="spinner-border" />
-            <p>Loading users...</p>
-          </div>
-        ) : users.length === 0 ? (
-          <div className="users-empty">
-
-            <div className="users-empty-icon">
-              👥
-            </div>
-
-            <h3>No users found</h3>
+            <div className="loading-spinner"></div>
 
             <p>
-              Registered users will appear here.
+              Loading users...
             </p>
-
           </div>
+
         ) : (
+
           <div className="users-table-wrapper">
 
             <table className="users-table">
 
+              {/* COLUMN WIDTHS */}
+
+              <colgroup>
+                <col className="user-col" />
+                <col className="email-col" />
+                <col className="role-col" />
+                <col className="status-col" />
+                <col className="actions-col" />
+              </colgroup>
+
+
+              {/* TABLE HEADER */}
+
               <thead>
                 <tr>
-                  <th>User</th>
-                  <th>Email</th>
-                  <th>Role</th>
-                  <th>Status</th>
-                  <th className="users-actions-column">
+                  <th>
+                    User
+                  </th>
+
+                  <th>
+                    Email
+                  </th>
+
+                  <th>
+                    Role
+                  </th>
+
+                  <th>
+                    Status
+                  </th>
+
+                  <th>
                     Actions
                   </th>
                 </tr>
               </thead>
 
+
+              {/* TABLE BODY */}
+
               <tbody>
 
-                {users.map((user) => (
+                {/* NO USERS */}
 
-                  <tr key={user.id}>
+                {users.length === 0 ? (
 
-                    <td>
-                      <div className="user-name">
-                        <div className="user-avatar">
-                          {user.name
-                            ?.charAt(0)
-                            ?.toUpperCase()}
+                  <tr>
+
+                    <td colSpan="5">
+
+                      <div className="no-users">
+
+                        <div className="no-users-icon">
+                          👥
                         </div>
 
-                        <strong>
-                          {user.name}
-                        </strong>
+                        <h4>
+                          No users found
+                        </h4>
+
+                        <p>
+                          Registered users will appear here.
+                        </p>
+
                       </div>
-                    </td>
-
-                    <td>
-                      <span className="user-email">
-                        {user.email}
-                      </span>
-                    </td>
-
-                    <td>
-                      <span
-                        className={`role-badge ${
-                          user.role === "admin"
-                            ? "admin-role"
-                            : "user-role"
-                        }`}
-                      >
-                        {user.role}
-                      </span>
-                    </td>
-
-                    <td>
-                      <span className="status-badge">
-                        <span className="status-dot" />
-                        {user.status}
-                      </span>
-                    </td>
-
-                    <td className="users-actions-column">
-
-                      <button
-                        type="button"
-                        className="user-delete-btn"
-                        onClick={() =>
-                          openDeleteModal(
-                            user.id
-                          )
-                        }
-                        title="Delete user"
-                      >
-                        🗑️
-                      </button>
 
                     </td>
 
                   </tr>
 
-                ))}
+                ) : (
+
+                  /* USERS */
+
+                  users.map((user) => (
+
+                    <tr
+                      key={user.id}
+                    >
+
+                      {/* =================
+                          USER
+                      ================== */}
+
+                      <td>
+
+                        <div className="user-info">
+
+                          <div className="user-avatar">
+                            {user.name
+                              ? user.name
+                                  .charAt(0)
+                                  .toUpperCase()
+                              : "U"}
+                          </div>
+
+                          <strong>
+                            {user.name ||
+                              "Unknown User"}
+                          </strong>
+
+                        </div>
+
+                      </td>
+
+
+                      {/* =================
+                          EMAIL
+                      ================== */}
+
+                      <td>
+
+                        <span className="user-email">
+                          {user.email}
+                        </span>
+
+                      </td>
+
+
+                      {/* =================
+                          ROLE
+                      ================== */}
+
+                      <td>
+
+                        <select
+                          value={
+                            user.role ||
+                            "user"
+                          }
+                            value={user.role || "user"}
+                            onChange={(e) =>
+                              openRoleModal(
+                                user,
+                                e.target.value
+                              )
+                            }
+                            className={`role-select ${
+                              user.role === "admin"
+                                ? "role-admin-select"
+                                : "role-user-select"
+                            }`}
+                          >
+                            <option value="user">
+                              User
+                            </option>
+
+                            <option value="admin">
+                              Admin
+                            </option>
+                          </select>
+                      </td>
+
+
+                      {/* =================
+                          STATUS
+                      ================== */}
+
+                      <td>
+
+                        <span className="status-badge">
+
+                          <span className="status-dot"></span>
+
+                          {user.status
+                            ? user.status
+                                .charAt(0)
+                                .toUpperCase() +
+                              user.status.slice(
+                                1
+                              )
+                            : "Active"}
+
+                        </span>
+
+                      </td>
+
+
+                      {/* =================
+                          ACTIONS
+                      ================== */}
+
+                      <td>
+
+                        <div className="user-actions">
+
+                          <button
+                            type="button"
+                            className="user-delete-btn"
+                            onClick={() =>
+                              openDeleteModal(
+                                user.id
+                              )
+                            }
+                            title="Delete user"
+                            aria-label={`Delete ${user.name}`}
+                          >
+                            🗑️
+                          </button>
+
+                        </div>
+
+                      </td>
+
+                    </tr>
+
+                  ))
+
+                )}
 
               </tbody>
 
             </table>
 
           </div>
+
         )}
 
       </div>
 
-      {/* ================================
-          DELETE MODAL
-      ================================= */}
+
+      {/* =====================================
+          DELETE CONFIRMATION MODAL
+      ====================================== */}
 
       {showDeleteModal && (
 
-        <div className="admin-modal-overlay">
+        <div
+          className="admin-modal-overlay"
+          onClick={closeDeleteModal}
+        >
 
-          <div className="admin-modal confirm-modal">
+          <div
+            className="admin-modal confirm-modal"
+            onClick={(e) =>
+              e.stopPropagation()
+            }
+          >
+
+            {/* WARNING ICON */}
 
             <div className="delete-warning-icon">
               ⚠️
             </div>
 
+
+            {/* TITLE */}
+
             <h3>
               Delete User?
             </h3>
+
+
+            {/* MESSAGE */}
 
             <p>
               Are you sure you want to
@@ -402,12 +677,17 @@ function Users() {
               Firestore record.
             </p>
 
+
+            {/* BUTTONS */}
+
             <div className="delete-modal-buttons">
 
               <button
                 type="button"
                 className="btn btn-secondary"
-                onClick={closeDeleteModal}
+                onClick={
+                  closeDeleteModal
+                }
               >
                 Cancel
               </button>
@@ -415,7 +695,9 @@ function Users() {
               <button
                 type="button"
                 className="btn btn-danger"
-                onClick={handleDelete}
+                onClick={
+                  handleDelete
+                }
               >
                 Delete
               </button>
@@ -427,6 +709,104 @@ function Users() {
         </div>
 
       )}
+
+      {/* ==========================================
+    ROLE CHANGE CONFIRMATION MODAL
+========================================== */}
+
+{showRoleModal && roleChangeUser && (
+  <div className="admin-modal-overlay">
+
+    <div className="admin-modal confirm-modal">
+
+      <div className="role-warning-icon">
+        🔐
+      </div>
+
+      <h3>
+        Change User Role?
+      </h3>
+
+      <p>
+        You are about to change the role of:
+      </p>
+
+      <strong className="role-user-name">
+        {roleChangeUser.name}
+      </strong>
+
+      <div className="role-change-display">
+
+        <span
+          className={
+            roleChangeUser.role === "admin"
+              ? "role-badge admin-role"
+              : "role-badge user-role"
+          }
+        >
+          {roleChangeUser.role === "admin"
+            ? "Admin"
+            : "User"}
+        </span>
+
+        <span className="role-arrow">
+          →
+        </span>
+
+        <span
+          className={
+            newRole === "admin"
+              ? "role-badge admin-role"
+              : "role-badge user-role"
+          }
+        >
+          {newRole === "admin"
+            ? "Admin"
+            : "User"}
+        </span>
+
+      </div>
+
+      {newRole === "admin" ? (
+        <p className="role-warning-text">
+          ⚠️ This user will receive administrator
+          permissions.
+        </p>
+      ) : (
+        <p className="role-warning-text">
+          ℹ️ This user will no longer have
+          administrator permissions.
+        </p>
+      )}
+
+      <div className="delete-modal-buttons">
+
+        <button
+          type="button"
+          className="btn btn-secondary"
+          onClick={closeRoleModal}
+          disabled={changingRole}
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={confirmRoleChange}
+          disabled={changingRole}
+        >
+          {changingRole
+            ? "Changing..."
+            : "Confirm Change"}
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+)}
 
     </div>
   );

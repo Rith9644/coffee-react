@@ -13,7 +13,6 @@ import cake from "../assets/images/image.png";
 
 import "../styles/menu.css";
 
-
 // ======================================================
 // LOCAL IMAGE MAP
 // ======================================================
@@ -36,18 +35,12 @@ const imageMap = {
   "image.png": cake,
 };
 
-
 // ======================================================
 // GET LOCAL IMAGE
 // ======================================================
 
 const getLocalImage = (image) => {
-  if (!image) {
-    return null;
-  }
-
-  // Make sure image is a string
-  if (typeof image !== "string") {
+  if (!image || typeof image !== "string") {
     return null;
   }
 
@@ -62,7 +55,7 @@ const getLocalImage = (image) => {
     return imageMap[value];
   }
 
-  // Decode URL
+  // Try decoded value
   try {
     const decoded = decodeURIComponent(value);
 
@@ -83,7 +76,6 @@ const getLocalImage = (image) => {
   return null;
 };
 
-
 // ======================================================
 // NORMALIZE IMAGE VALUE
 // ======================================================
@@ -96,15 +88,15 @@ const normalizeImage = (image) => {
   // Firebase may contain an object
   if (typeof image === "object") {
     if (typeof image.url === "string") {
-      return image.url;
+      return image.url.trim();
     }
 
     if (typeof image.src === "string") {
-      return image.src;
+      return image.src.trim();
     }
 
     if (typeof image.image === "string") {
-      return image.image;
+      return image.image.trim();
     }
 
     return "";
@@ -117,7 +109,6 @@ const normalizeImage = (image) => {
 
   return "";
 };
-
 
 // ======================================================
 // IMAGE COMPONENT
@@ -138,6 +129,7 @@ function MenuImage({ image, name }) {
 
       const normalized = normalizeImage(image);
 
+      // No image
       if (!normalized) {
         if (!cancelled) {
           setLoadingImage(false);
@@ -146,7 +138,6 @@ function MenuImage({ image, name }) {
 
         return;
       }
-
 
       // ==================================================
       // LOCAL IMAGE
@@ -163,6 +154,18 @@ function MenuImage({ image, name }) {
         return;
       }
 
+      // ==================================================
+      // DATA URL
+      // ==================================================
+
+      if (normalized.startsWith("data:image/")) {
+        if (!cancelled) {
+          setImageUrl(normalized);
+          setLoadingImage(false);
+        }
+
+        return;
+      }
 
       // ==================================================
       // DIRECT IMAGE URL
@@ -182,21 +185,6 @@ function MenuImage({ image, name }) {
         return;
       }
 
-
-      // ==================================================
-      // DATA URL
-      // ==================================================
-
-      if (normalized.startsWith("data:image/")) {
-        if (!cancelled) {
-          setImageUrl(normalized);
-          setLoadingImage(false);
-        }
-
-        return;
-      }
-
-
       // ==================================================
       // WEBPAGE URL
       // ==================================================
@@ -214,9 +202,7 @@ function MenuImage({ image, name }) {
           const response = await fetch(apiUrl);
 
           if (!response.ok) {
-            throw new Error(
-              "Could not read webpage"
-            );
+            throw new Error("Could not read webpage");
           }
 
           const result = await response.json();
@@ -235,7 +221,6 @@ function MenuImage({ image, name }) {
 
             return;
           }
-
         } catch (error) {
           console.error(
             "Could not find webpage image:",
@@ -243,7 +228,6 @@ function MenuImage({ image, name }) {
           );
         }
       }
-
 
       // ==================================================
       // FAILED
@@ -262,7 +246,6 @@ function MenuImage({ image, name }) {
     };
   }, [image]);
 
-
   // ====================================================
   // LOADING
   // ====================================================
@@ -275,7 +258,6 @@ function MenuImage({ image, name }) {
     );
   }
 
-
   // ====================================================
   // ERROR
   // ====================================================
@@ -287,7 +269,6 @@ function MenuImage({ image, name }) {
       </div>
     );
   }
-
 
   // ====================================================
   // IMAGE
@@ -305,7 +286,6 @@ function MenuImage({ image, name }) {
     />
   );
 }
-
 
 // ======================================================
 // MENU COMPONENT
@@ -325,6 +305,15 @@ function Menu() {
 
   const { addToCart } = useCart();
 
+  // ====================================================
+  // ADD TO CART CONFIRMATION
+  // ====================================================
+
+  const [selectedCartItem, setSelectedCartItem] =
+    useState(null);
+
+  const [showCartConfirm, setShowCartConfirm] =
+    useState(false);
 
   // ====================================================
   // GET MENU FROM FIREBASE
@@ -351,17 +340,14 @@ function Menu() {
           snapshot.size
         );
 
-
-        const items =
-          snapshot.docs.map((firebaseDoc) => {
-            const data =
-              firebaseDoc.data();
+        const items = snapshot.docs.map(
+          (firebaseDoc) => {
+            const data = firebaseDoc.data();
 
             console.log(
               "Menu item:",
               data
             );
-
 
             return {
               id: firebaseDoc.id,
@@ -385,11 +371,10 @@ function Menu() {
               price:
                 data.price ?? 0,
             };
-          });
-
+          }
+        );
 
         setMenuItems(items);
-
       } catch (firebaseError) {
         console.error(
           "Firebase menu error:",
@@ -399,16 +384,13 @@ function Menu() {
         setError(
           `Could not load menu: ${firebaseError.message}`
         );
-
       } finally {
         setLoading(false);
       }
     };
 
-
     getMenuItems();
   }, []);
-
 
   // ====================================================
   // FILTER MENU
@@ -426,7 +408,6 @@ function Menu() {
           return category === activeCategory;
         });
 
-
   // ====================================================
   // CATEGORIES
   // ====================================================
@@ -440,18 +421,97 @@ function Menu() {
     "other",
   ];
 
-
   // ====================================================
-  // ADD TO CART
+  // OPEN ADD TO CART CONFIRMATION
   // ====================================================
 
   const handleAddToCart = (item) => {
-    addToCart({
-      ...item,
-      image: normalizeImage(item.image),
-    });
+    console.log(
+      "Selected item:",
+      item
+    );
+
+    setSelectedCartItem(item);
+    setShowCartConfirm(true);
   };
 
+  // ====================================================
+  // CONFIRM ADD TO CART
+  // ====================================================
+
+  const confirmAddToCart = () => {
+    if (!selectedCartItem) {
+      return;
+    }
+
+    const normalizedImage =
+      normalizeImage(
+        selectedCartItem.image
+      );
+
+    const localImage =
+      getLocalImage(normalizedImage);
+
+    const finalImage =
+      localImage || normalizedImage;
+
+    console.log(
+      "Adding item to cart:",
+      selectedCartItem.name
+    );
+
+    console.log(
+      "Original image:",
+      selectedCartItem.image
+    );
+
+    console.log(
+      "Resolved cart image:",
+      finalImage
+    );
+
+    addToCart({
+      ...selectedCartItem,
+
+      // Important:
+      // Store the actual Vite image URL
+      // when this is a local image.
+      image: finalImage,
+    });
+
+    // Close confirmation modal
+    setSelectedCartItem(null);
+    setShowCartConfirm(false);
+  };
+
+  // ====================================================
+  // CANCEL ADD TO CART
+  // ====================================================
+
+  const cancelAddToCart = () => {
+    setSelectedCartItem(null);
+    setShowCartConfirm(false);
+  };
+
+  // ====================================================
+  // GET CONFIRMATION IMAGE
+  // ====================================================
+
+  const getConfirmationImage = () => {
+    if (!selectedCartItem) {
+      return "";
+    }
+
+    const normalizedImage =
+      normalizeImage(
+        selectedCartItem.image
+      );
+
+    const localImage =
+      getLocalImage(normalizedImage);
+
+    return localImage || normalizedImage;
+  };
 
   // ====================================================
   // PAGE
@@ -475,8 +535,8 @@ function Menu() {
                 Our Signature Collection
               </p>
 
-              <h1 className="display-5 fw-bold mb-3">
-                Discover Our Menu
+             <h1 className="menu-hero-title">
+              Discover Our <span>Menu</span>
               </h1>
 
               <p className="menu-text">
@@ -493,7 +553,6 @@ function Menu() {
 
       </section>
 
-
       {/* ==================================================
           MENU SECTION
       ================================================== */}
@@ -501,7 +560,6 @@ function Menu() {
       <section className="menu-section py-5">
 
         <div className="container">
-
 
           {/* ==================================================
               FILTER BUTTONS
@@ -533,7 +591,6 @@ function Menu() {
 
           </div>
 
-
           {/* ==================================================
               LOADING
           ================================================== */}
@@ -549,7 +606,6 @@ function Menu() {
             </div>
 
           )}
-
 
           {/* ==================================================
               FIREBASE ERROR
@@ -570,7 +626,6 @@ function Menu() {
             </div>
 
           )}
-
 
           {/* ==================================================
               NO ITEMS
@@ -595,7 +650,6 @@ function Menu() {
 
             )}
 
-
           {/* ==================================================
               MENU ITEMS
           ================================================== */}
@@ -615,7 +669,6 @@ function Menu() {
 
                     <div className="menu-card">
 
-
                       {/* ======================================
                           IMAGE
                       ====================================== */}
@@ -624,7 +677,6 @@ function Menu() {
                         image={item.image}
                         name={item.name}
                       />
-
 
                       {/* ======================================
                           PRICE
@@ -639,7 +691,6 @@ function Menu() {
 
                       </span>
 
-
                       {/* ======================================
                           NAME
                       ====================================== */}
@@ -647,7 +698,6 @@ function Menu() {
                       <h5>
                         {item.name}
                       </h5>
-
 
                       {/* ======================================
                           DESCRIPTION
@@ -657,7 +707,6 @@ function Menu() {
                         {item.description ||
                           "No description available."}
                       </p>
-
 
                       {/* ======================================
                           ADD TO CART
@@ -690,6 +739,118 @@ function Menu() {
         </div>
 
       </section>
+
+      {/* ==================================================
+          ADD TO CART CONFIRMATION MODAL
+      ================================================== */}
+
+      {showCartConfirm &&
+        selectedCartItem && (
+
+          <div
+            className="cart-confirm-overlay"
+            onClick={cancelAddToCart}
+          >
+
+            <div
+              className="cart-confirm-modal"
+              onClick={(e) =>
+                e.stopPropagation()
+              }
+            >
+
+              {/* ==========================================
+                  PRODUCT IMAGE
+              ========================================== */}
+
+              <div className="cart-confirm-image">
+
+                {getConfirmationImage() ? (
+
+                  <img
+                    src={getConfirmationImage()}
+                    alt={
+                      selectedCartItem.name
+                    }
+                  />
+
+                ) : (
+
+                  <div className="cart-confirm-image-placeholder">
+                    ☕
+                  </div>
+
+                )}
+
+              </div>
+
+              {/* ==========================================
+                  TITLE
+              ========================================== */}
+
+              <h3>
+                Add to Cart?
+              </h3>
+
+              {/* ==========================================
+                  MESSAGE
+              ========================================== */}
+
+              <p>
+                Do you want to add{" "}
+                <strong>
+                  {selectedCartItem.name}
+                </strong>{" "}
+                to your cart?
+              </p>
+
+              {/* ==========================================
+                  PRICE
+              ========================================== */}
+
+              <div className="cart-confirm-price">
+
+                $
+                {Number(
+                  selectedCartItem.price || 0
+                ).toFixed(2)}
+
+              </div>
+
+              {/* ==========================================
+                  BUTTONS
+              ========================================== */}
+
+              <div className="cart-confirm-buttons">
+
+                <button
+                  type="button"
+                  className="cart-confirm-cancel"
+                  onClick={
+                    cancelAddToCart
+                  }
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  className="cart-confirm-add"
+                  onClick={
+                    confirmAddToCart
+                  }
+                >
+                  🛒 Add to Cart
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        )}
+
     </>
   );
 }

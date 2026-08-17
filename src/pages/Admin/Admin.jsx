@@ -16,26 +16,57 @@ function Admin() {
   return (
     <div className="admin-layout">
 
-
+      {/* =========================================
+          SIDEBAR
+      ========================================= */}
       <AdminSidebar
         showSidebar={showSidebar}
         setShowSidebar={setShowSidebar}
       />
 
-      <div className="admin-main">
 
-        <Routes>
+      {/* =========================================
+          RIGHT SIDE
+      ========================================= */}
+      <div className="admin-content">
 
-          <Route index element={<Dashboard />} />
+        {/* =======================================
+            PAGE CONTENT
+        ======================================= */}
+        <main className="admin-main">
 
-          <Route path="orders" element={<Orders />} />
+          <Routes>
 
-          <Route path="menu" element={<MenuManager />} />
+            {/* DASHBOARD */}
+            <Route
+              index
+              element={<Dashboard />}
+            />
 
-          <Route path="users" element={<Users />} />
+            {/* ORDERS */}
+            <Route
+              path="orders"
+              element={<Orders />}
+            />
 
-        </Routes>
+            {/* MENU */}
+            <Route
+              path="menu"
+              element={<MenuManager />}
+            />
 
+            {/* USERS */}
+            <Route
+              path="users"
+              element={<Users />}
+            />
+
+          </Routes>
+
+        </main>
+
+
+    
       </div>
 
     </div>

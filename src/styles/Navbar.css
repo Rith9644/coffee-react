@@ -1,111 +1,159 @@
+/* ================================
+   MAIN NAVBAR
+================================ */
 
 .navbar {
-    background-color: white;
-    height: 80px;
+    background-color: #ffffff;
+    min-height: 80px;
     margin: 10px;
     border-radius: 16px;
-    padding: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    position: relative;
+    z-index: 1000;
 }
 
 .navbar-brand {
-    font-weight: 500;
-    color: black;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    color: #000000;
     font-size: 24px;
-    transition: 0.3s color;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.navbar-brand:hover {
+    color: #6f4e37;
 }
 
 .navbar-brand img {
     height: 50px;
     width: auto;
+    object-fit: contain;
 }
 
 .navbar-brand span {
-    display: fixed;
+    display: inline-block;
     font-size: 1.2rem;
     font-weight: 600;
-    padding-top: 10px;
+    padding-top: 0;
 }
+
+
+/* ================================
+   LOGIN BUTTON
+================================ */
 
 .login-button {
     background-color: #82470d;
-    color: white;
+    color: #ffffff;
     padding: 8px 20px;
     font-size: 14px;
     border-radius: 50px;
     text-decoration: none;
-    transition: 0.3s background-color;
-}
-.login-button:hover {
-    background-color: #5a3f2c;
+    border: none;
+    transition:
+        background-color 0.3s ease,
+        transform 0.2s ease;
 }
 
+.login-button:hover {
+    background-color: #5a3f2c;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+
+/* ================================
+   NAVBAR TOGGLER
+================================ */
+
 .navbar-toggler {
-    display: none;
     border: none;
     font-size: 1.25rem;
+    background: transparent;
+    padding: 6px 10px;
 }
-.navbar-toggler:focus .btn-close:focus {
+
+.navbar-toggler:focus {
     outline: none;
     box-shadow: none;
 }
 
-@media (max-width: 991px) {
-    .navbar-toggler {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-}
+
+/* ================================
+   NAVIGATION LINKS
+================================ */
 
 .nav-link {
-    color: #333;
+    color: #333333;
     font-weight: 500;
     position: relative;
+    text-decoration: none;
+    transition: color 0.3s ease;
 }
 
-.nav-link:hover, .nav-link.active {
+.nav-link:hover {
     color: #6f4e37 !important;
 }
+
 .nav-link.active {
     color: #6f4e37 !important;
     font-weight: 700;
-    position: relative;
 }
 
- @media (min-width: 991px) { 
+
+/* ================================
+   DESKTOP NAVIGATION
+================================ */
+
+@media (min-width: 992px) {
+
     .nav-link::before {
-        content: '';
+        content: "";
         position: absolute;
         width: 0;
         height: 2px;
         bottom: 0;
         left: 50%;
         transform: translateX(-50%);
-        
         visibility: hidden;
+        background-color: #d4a373;
         transition: all 0.3s ease-in-out;
     }
 
-    .nav-link:hover::before, .nav-link.active::before {
+    .nav-link:hover::before {
         width: 100%;
         visibility: visible;
     }
+
+    .nav-link.active::before {
+        width: 100%;
+        visibility: visible;
+    }
+
     .nav-link.active::after {
-    content: "";
-    position: absolute;
-    left: 10px;
-    bottom: -5px;
-    width: 60%;
-    height: 3px;
-    background: #d4a373;
-    border-radius: 10px;
+        content: "";
+        position: absolute;
+        left: 10px;
+        bottom: -5px;
+        width: 60%;
+        height: 3px;
+        background: #d4a373;
+        border-radius: 10px;
     }
 }
 
-* Offcanvas/Mobile Menu Styling */
+
+/* ================================
+   OFFCANVAS / MOBILE MENU
+================================ */
+
 .offcanvas {
-    background: linear-gradient(135deg, #6f4e37 0%, #8b6f47 100%);
-    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(
+        white 100%,
+    );
 }
 
 .offcanvas-header {
@@ -114,7 +162,7 @@
 }
 
 .offcanvas-header .navbar-brand {
-    color: white;
+    color: #000000;
 }
 
 .offcanvas-header .btn-close {
@@ -122,7 +170,10 @@
     width: 30px;
     height: 30px;
     border-radius: 6px;
-    transition: all 0.3s ease;
+    opacity: 1;
+    transition:
+        background-color 0.3s ease,
+        transform 0.3s ease;
 }
 
 .offcanvas-header .btn-close:hover {
@@ -142,8 +193,10 @@
     padding: 12px 16px;
     border-radius: 8px;
     font-weight: 500;
-    transition: all 0.3s ease;
-    position: relative;
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease,
+        transform 0.3s ease;
 }
 
 .offcanvas-body .nav-link:hover {
@@ -154,9 +207,14 @@
 
 .offcanvas-body .nav-link.active {
     background-color: #d4a373;
-    color: #333 !important;
+    color: #333333 !important;
     font-weight: 700;
 }
+
+
+/* ================================
+   RIGHT SIDE ACTIONS
+================================ */
 
 .right-side-actions {
     display: flex;
@@ -171,6 +229,11 @@
     gap: 10px;
 }
 
+
+/* ================================
+   LOGIN / REGISTER / LOGOUT
+================================ */
+
 .login-button,
 .register-button,
 .logout-button {
@@ -178,29 +241,48 @@
     font-size: 14px;
     border-radius: 999px;
     text-decoration: none;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
 }
 
 .login-button,
 .register-button {
-    background: linear-gradient(135deg, #82470d 0%, #a15c2b 100%);
-    color: white;
+    background: linear-gradient(
+        135deg,
+        #82470d 0%,
+        #a15c2b 100%
+    );
+
+    color: #ffffff;
     box-shadow: 0 8px 18px rgba(130, 71, 13, 0.16);
     border: none;
 }
 
+.login-button:hover,
+.register-button:hover {
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px rgba(130, 71, 13, 0.2);
+}
+
 .logout-button {
-    background: white;
+    background: #ffffff;
     color: #82470d;
     border: 1px solid #e2c7a7;
 }
 
-.login-button:hover,
-.register-button:hover,
 .logout-button:hover {
+    background: #fff8f2;
+    color: #82470d;
     transform: translateY(-1px);
-    box-shadow: 0 10px 20px rgba(130, 71, 13, 0.2);
 }
+
+
+/* ================================
+   PROFILE
+================================ */
 
 .profile-actions {
     display: flex;
@@ -221,13 +303,19 @@
 .profile-avatar {
     width: 38px;
     height: 38px;
+    min-width: 38px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #82470d 0%, #a15c2b 100%);
-    color: white;
+    background: linear-gradient(
+        135deg,
+        #82470d 0%,
+        #a15c2b 100%
+    );
+    color: #ffffff;
     font-weight: 700;
+    overflow: hidden;
 }
 
 .profile-avatar img {
@@ -264,38 +352,142 @@
     font-size: 0.75rem;
 }
 
-.custom-modal-card .form-label {
-    color: #5d3a24;
+
+/* ================================
+   ADMIN BUTTON
+================================ */
+
+.admin-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-shrink: 0;
+
+    padding: 7px 14px;
+    margin-right: 8px;
+    margin-left: 4px;
+
+    border: 2px solid #8b5e3c;
+    border-radius: 30px;
+
+    background: #ffffff;
+    color: #8b5e3c;
+
     font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    white-space: nowrap;
+
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease,
+        transform 0.2s ease;
 }
 
-.custom-modal-card .form-control {
-    border-radius: 12px;
-    border: 1px solid #e2c7a7;
-    padding: 10px 12px;
+.admin-button:hover {
+    background: #8b5e3c;
+    color: #ffffff;
+    transform: translateY(-1px);
 }
 
-.custom-modal-card .form-control:focus {
-    border-color: #a15c2b;
-    box-shadow: 0 0 0 0.2rem rgba(161, 92, 43, 0.16);
+.admin-button i {
+    font-size: 18px;
 }
+
+.admin-button-text {
+    display: inline-block;
+}
+
+
+/* ================================
+   CART BUTTON
+================================ */
+
+.cart-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    padding: 9px 14px;
+
+    border: 1px solid #d9b18f;
+    border-radius: 999px;
+
+    background: #ffffff;
+    color: #82470d;
+
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.cart-button:hover {
+    background: #fff5ec;
+    border-color: #82470d;
+    color: #82470d;
+    transform: translateY(-1px);
+}
+
+.cart-button .bi-cart3 {
+    font-size: 1rem;
+}
+
+.cart-button .badge {
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 0.65rem;
+    border-radius: 50%;
+}
+
+.cart-button-text {
+    display: inline-block;
+}
+
+
+/* ================================
+   MODAL
+================================ */
 
 .custom-modal-backdrop {
     position: fixed;
     inset: 0;
     z-index: 2000;
+
     background: rgba(20, 12, 8, 0.65);
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     padding: 20px;
 }
 
 .custom-modal-card {
     width: min(100%, 460px);
+
     border-radius: 24px;
     padding: 24px;
-    background: linear-gradient(135deg, #fff8f2 0%, #ffffff 100%);
+
+    background: linear-gradient(
+        135deg,
+        #fff8f2 0%,
+        #ffffff 100%
+    );
+
     box-shadow: 0 20px 50px rgba(130, 71, 13, 0.18);
 }
 
@@ -317,6 +509,27 @@
     padding-top: 8px;
 }
 
+.custom-modal-card .form-label {
+    color: #5d3a24;
+    font-weight: 600;
+}
+
+.custom-modal-card .form-control {
+    border-radius: 12px;
+    border: 1px solid #e2c7a7;
+    padding: 10px 12px;
+}
+
+.custom-modal-card .form-control:focus {
+    border-color: #a15c2b;
+    box-shadow: 0 0 0 0.2rem rgba(161, 92, 43, 0.16);
+}
+
+
+/* ================================
+   CONFIRM MODAL
+================================ */
+
 .confirm-modal .modal-title {
     color: #6f4e37;
     margin: 0;
@@ -334,7 +547,7 @@
 }
 
 .confirm-modal .logout-button {
-    background: white;
+    background: #ffffff;
     color: #82470d;
     border: 1px solid #e2c7a7;
     padding: 8px 16px;
@@ -344,11 +557,19 @@
     padding: 8px 16px;
 }
 
+
+/* ================================
+   LOGIN MODAL
+================================ */
+
 .modal-eyebrow {
     margin: 0 0 4px;
+
     color: #a15c2b;
+
     font-size: 0.8rem;
     font-weight: 700;
+
     letter-spacing: 0.12em;
     text-transform: uppercase;
 }
@@ -395,104 +616,85 @@
     margin-bottom: 12px;
     padding: 10px 12px;
     border-radius: 10px;
+
     background: #fff3e6;
     color: #8f4c16;
+
     font-size: 0.95rem;
 }
 
 .login-modal .btn-login-submit {
     border: none;
     border-radius: 999px;
-    background: linear-gradient(135deg, #82470d 0%, #a15c2b 100%);
-    color: white;
+
+    background: linear-gradient(
+        135deg,
+        #82470d 0%,
+        #a15c2b 100%
+    );
+
+    color: #ffffff;
+
     padding: 10px 16px;
     font-weight: 600;
 }
 
 .login-modal .btn-login-submit:hover {
-    color: white;
+    color: #ffffff;
     filter: brightness(1.03);
 }
 
-.admin-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  flex-shrink: 0;
 
-  padding: 7px 14px;
-  margin-right: 8px;
-  margin-left: 4px;
+/* ================================
+   TABLET
+================================ */
 
-  border: 2px solid #8B5E3C;
-  border-radius: 30px;
+@media (max-width: 991px) {
 
-  background: #fff;
-  color: #8B5E3C;
+    .navbar {
+        margin: 8px;
+        padding: 0.5rem 1rem;
+    }
 
-  font-weight: 600;
-  font-size: 0.9rem;
-  text-decoration: none;
-  white-space: nowrap;
+    .navbar-toggler {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-  transition: all 0.3s ease;
+    .admin-button {
+        padding: 10px;
+        margin-right: 8px;
+    }
 }
 
-.admin-button:hover {
-  background: #8B5E3C;
-  color: white;
-}
 
-.admin-button i {
-  font-size: 18px;
-}
+/* ================================
+   MOBILE
+================================ */
 
-.admin-button-text,
-.cart-button-text {
-  display: inline-block;
-}
-
-.cart-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 9px 14px;
-  border: 1px solid #d9b18f;
-  border-radius: 999px;
-  background: #fff;
-  color: #82470d;
-  font-size: 0.9rem;
-  font-weight: 600;
-  line-height: 1;
-  transition: all 0.2s ease;
-}
-
-.cart-button:hover {
-  background: #fff5ec;
-  border-color: #82470d;
-  color: #82470d;
-  transform: translateY(-1px);
-}
-
-.cart-button .bi-cart3 {
-  font-size: 1rem;
-}
-
-.cart-button .badge {
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.65rem;
-  border-radius: 50%;
-}
-
-/* Small screen: show only avatar for logged-in users, hide extra meta and desktop logout */
 @media (max-width: 768px) {
+
+    .navbar {
+        min-height: 70px;
+        margin: 6px;
+        border-radius: 14px;
+        padding: 0.4rem 0.75rem;
+    }
+
+    .navbar-brand {
+        gap: 7px;
+        font-size: 20px;
+    }
+
+    .navbar-brand img {
+        height: 42px;
+    }
+
+    .navbar-brand span {
+        font-size: 1rem;
+    }
+
     .profile-meta {
         display: none;
     }
@@ -506,23 +708,24 @@
     }
 
     .right-side-actions {
-        gap: 14px;
-        margin-left: -4px;
+        gap: 10px;
+        margin-left: auto;
     }
 
-    .auth-buttons .login-button, .auth-buttons .register-button {
+    .auth-buttons .login-button,
+    .auth-buttons .register-button {
         padding: 8px 12px;
         font-size: 13px;
     }
 
     .navbar-toggler {
-        margin-left: -18px;
+        margin-left: 0;
     }
 
     .admin-button {
         padding: 6px 10px;
         margin-right: 0;
-        margin-left: 6px;
+        margin-left: 4px;
         font-size: 0.68rem;
         gap: 4px;
         border-width: 1.5px;
@@ -538,7 +741,7 @@
 
     .cart-button {
         padding: 7px 10px;
-        margin-left: -12px;
+        margin-left: 0;
         font-size: 0.75rem;
     }
 
@@ -551,20 +754,48 @@
     }
 }
 
-@media (max-width: 991px) {
-  .admin-button {
-    padding: 10px;
-    margin-right: 8px;
-  }
-}
 
-/* On larger screens show username but hide email to keep compact */
-@media (min-width: 769px) {
-    .profile-email {
-        display: none;
+/* ================================
+   SMALL MOBILE
+================================ */
+
+@media (max-width: 480px) {
+
+    .navbar {
+        min-height: 64px;
+        margin: 5px;
+        border-radius: 12px;
+    }
+
+    .navbar-brand img {
+        height: 38px;
+    }
+
+    .navbar-brand span {
+        font-size: 0.9rem;
+    }
+
+    .right-side-actions {
+        gap: 6px;
+    }
+
+    .admin-button {
+        padding: 6px 8px;
+    }
+
+    .cart-button {
+        padding: 7px 9px;
     }
 }
 
 
+/* ================================
+   DESKTOP PROFILE
+================================ */
 
+@media (min-width: 769px) {
 
+    .profile-email {
+        display: none;
+    }
+}
